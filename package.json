@@ -1,0 +1,39 @@
+{
+  "name": "simple-idp",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "ts-node-dev src/server.ts"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.7",
+    "cookie-session": "^2.1.0",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.17.1",
+    "express-partials": "^0.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "sequelize": "^6.37.6",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/connect-livereload": "^0.6.3",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cookie-session": "^2.0.49",
+    "@types/express": "^5.0.0",
+    "@types/express-partials": "^0.0.35",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/livereload": "^0.9.5",
+    "@types/node": "^16.9.1",
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "5.4"
+  }
+}

@@ -1,0 +1,47 @@
+<div class="container">
+
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">Authorize <%= serviceProviderName %></span>
+
+      <form action="/authorize" method="POST">
+        <% if ( typeof unauthorizedScopes==='undefined' || unauthorizedScopes.length===0 ) { %>
+          <p>
+            <%= serviceProviderName %> is requesting to authenticate with your SimpleIDP Credentials.
+          </p>
+          <% } else { %>
+            <p>
+              <%= serviceProviderName %> wants access to the following data:
+            </p>
+            <ul>
+              <% for (let scope of unauthorizedScopes) { %>
+                <li>
+                  <b>
+                    - <%= scope %>
+                  </b>
+                </li>
+                <input type="hidden" name="scopes[]" value="<%= scope %>">
+                <% } %>
+            </ul>
+            <p>Do you authorize <%= serviceProviderName %> to access this data?</p>
+            <% } %>
+              <br />
+              <button class="btn waves-effect waves-light" style="background-color: red;" type="submit" name="decision"
+                value="deny">
+                Deny <i class="material-icons right">cancel</i>
+              </button>
+              <button class="btn waves-effect waves-light" name="decision" value="allow" type="submit">
+                Allow <i class="material-icons right">send</i>
+              </button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  // listen to the deny script and confirm the user's decision
+  document.querySelector('button[name="decision"][value="deny"]').addEventListener('click', function () {
+    if (!confirm('Are you sure you want to deny access? This could prevent you from using <%= serviceProviderName %>.')) {
+      event.preventDefault();
+    }
+  });
+</script>

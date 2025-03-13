@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="card">
+    <div class="card-content">
+      <div class="card-title">
+        <h3>Home</h3>
+      </div>
+      <h3>Welcome back <%= user.email %>
+      </h3>
+
+      <h4>Your authorized applications:</h4>
+      <% if (!user.ServiceProviders.length) { %>
+        <b>You have not authorized any applications.</b>
+        <% } else { %>
+          <table>
+            <tr>
+              <th>App Name</th>
+              <th>Authorized Date</th>
+              <th>Actions</th>
+            </tr>
+            <% for (let app of user.ServiceProviders) { %>
+              <tr>
+                <td>
+                  <%= app.name %>
+                </td>
+                <td>
+                  <%= app.Authorization.createdAt %>
+                </td>
+                <td>
+                  <a
+                    href="/authorize?redirect_uri=<%= app.default_redirect_uri %>&response_type=code&client_id=<%= app.client_id %>">
+                    Login
+                  </a>
+                </td>
+              </tr>
+              <% } %>
+          </table>
+          <% } %>
+    </div>
+  </div>
+</div>
