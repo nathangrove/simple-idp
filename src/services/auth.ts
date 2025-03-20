@@ -68,10 +68,15 @@ export const verifyJwt = (token: string): AuthJwtPayload | null => {
   }
 }
 
-export const createJwt = (userId: number, scopes: string[]): string => {
+export const createIdToken = (payload: {
+  userId: number,
+  email?: string
+},
+  aud: string
+): string => {
   return sign({
-    sub: userId.toString(),
-    scopes
+    sub: payload.userId.toString(),
+    ...(payload.email && { email: payload.email })
   }, {
     key: (process.env.JWT_PRIVATE_KEY as string).replace(/\\n/gm, '\n')
   }, {
@@ -79,6 +84,24 @@ export const createJwt = (userId: number, scopes: string[]): string => {
     keyid: createHash('md5').update(process.env.JWT_PRIVATE_KEY as string).digest('hex'),
     issuer: 'http://localhost:3000',
     expiresIn: '7d',
-    algorithm: 'RS256'
+    algorithm: 'RS256',
+    audience: aud
+  });
+}
+
+export const createJwt = (userId: number, scopes: string[], aud: string): string => {
+  return sign({
+    sub: userId.toString(),
+    scp: scopes,
+    client_id: aud
+  }, {
+    key: (process.env.JWT_PRIVATE_KEY as string).replace(/\\n/gm, '\n')
+  }, {
+    // create an md5 of the key for kid
+    keyid: createHash('md5').update(process.env.JWT_PRIVATE_KEY as string).digest('hex'),
+    issuer: 'http://localhost:3000',
+    expiresIn: '7d',
+    algorithm: 'RS256',
+    audience: aud
   });
 }

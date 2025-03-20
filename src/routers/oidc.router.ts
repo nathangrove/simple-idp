@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { createJwt, requireAuth } from "../services/auth";
+import { createIdToken, createJwt, requireAuth } from "../services/auth";
 import { createHash, createPublicKey } from "crypto";
 import { checkAuthenticationCode, checkForUnauthorizedScopes, createAuthenticationCode, createAuthorization, getAuthorizedScopes } from "../services/oidc";
 import { ServiceProvider } from "../models/ServiceProvider";
 import { Authorization } from "../models/Authorization";
+import { User } from "../models/User";
 
 
 const ALLOWED_SCOPES = ['openid', 'email', 'profile'];
@@ -183,8 +184,9 @@ router.post('/token', async (req, res) => {
 
   const code = req.body.code;
   const client_secret = req.body.client_secret;
+  const client_id = req.body.client_id;
 
-  if (!code || !client_secret) {
+  if (!code || !client_secret || !client_id) {
     res.status(400).json({ message: 'Invalid request' });
     return;
   }
@@ -206,11 +208,24 @@ router.post('/token', async (req, res) => {
   // get authorized scopes
   const scopes = await getAuthorizedScopes(userId, serviceProvider.toJSON().id);
 
+  let email;
+  if (scopes.split(' ').indexOf('email') > -1) {
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
+      res.status(400).json({ message: 'Invalid user' });
+      return;
+    }
+    email = user.toJSON().email;
+  }
   // generate an access token
-  const token = createJwt(userId, scopes.split(' '));
+  const token = createJwt(userId, scopes.split(' '), client_id);
 
   res.json({
     access_token: token,
+    id_token: createIdToken({
+      userId,
+      ...(email && { email })
+    }, client_id),
     token_type: 'Bearer',
     expires_in: 3600,
   });
