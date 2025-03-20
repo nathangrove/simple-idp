@@ -12,7 +12,7 @@ router.post('/login', async (req, res) => {
   const user = await validatePassword(email, password);
   if (!user) return res.redirect('/login?error=true');
 
-  const token = createJwt(user.id, ['session']);
+  const token = createJwt(user.id, ['session'], process.env.ISSUER as string);
   req.session.token = token;
   req.user = user;
   res.redirect('/');
@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
       password: await bcrypt.hash(password, 10)
     });
     // store the user in the session
-    const token = createJwt(newUser.toJSON().id, ['session']);
+    const token = createJwt(newUser.toJSON().id, ['session'], process.env.ISSUER as string);
     req.session.token = token;
     req.user = newUser.toJSON();
 

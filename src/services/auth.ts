@@ -57,7 +57,7 @@ export const verifyJwt = (token: string): AuthJwtPayload | null => {
       token,
       (process.env.JWT_PUBLIC_KEY as string).replace(/\\n/gm, '\n'),
       {
-        issuer: 'http://localhost:3000',
+        issuer: process.env.ISSUER,
         algorithms: ['RS256'],
         maxAge: '7d'
       }
@@ -82,7 +82,7 @@ export const createIdToken = (payload: {
   }, {
     // create an md5 of the key for kid
     keyid: createHash('md5').update(process.env.JWT_PRIVATE_KEY as string).digest('hex'),
-    issuer: 'http://localhost:3000',
+    issuer: process.env.ISSUER,
     expiresIn: '7d',
     algorithm: 'RS256',
     audience: aud
@@ -99,7 +99,7 @@ export const createJwt = (userId: number, scopes: string[], aud: string): string
   }, {
     // create an md5 of the key for kid
     keyid: createHash('md5').update(process.env.JWT_PRIVATE_KEY as string).digest('hex'),
-    issuer: 'http://localhost:3000',
+    issuer: process.env.ISSUER,
     expiresIn: '7d',
     algorithm: 'RS256',
     audience: aud

@@ -84,7 +84,7 @@ router.get('/authorize', (req, res, next) => {
       res.redirect(redirectUrl);
 
     } else {
-      const token = createJwt(req.user?.id, []);
+      const token = createJwt(req.user?.id, [], serviceProvider.toJSON().client_id);
       const redirctUrl = `${req.session.oidc?.redirect_uri}?id_token=${token}${req.session.oidc?.state ? `&state=${req.session.oidc?.state}` : ''}`;
       req.session.oidc = undefined;
       res.redirect(redirctUrl);
@@ -119,7 +119,7 @@ router.post('/authorize', requireAuth('session'), async (req, res) => {
     req.session.oidc = undefined;
     res.redirect(redirctUrl);
   } else {
-    const token = createJwt(req.user?.id, req.session.oidc.scope?.split(' ') ?? []);
+    const token = createJwt(req.user?.id, req.session.oidc.scope?.split(' ') ?? [], serviceProvider.toJSON().client_id);
     const redirectUrl = `${req.session.oidc?.redirect_uri}?id_token=${token}&state=${req.session.oidc?.state}`;
     req.session.oidc = undefined;
     res.redirect(redirectUrl);
@@ -147,11 +147,11 @@ router.get('/authorization/revoke/:client_id', requireAuth('session'), async (re
 
 router.get('/.well-known/openid-configuration', (req, res) => {
   res.json({
-    issuer: 'http://localhost:3000',
-    authorization_endpoint: 'http://localhost:3000/authorize',
-    token_endpoint: 'http://localhost:3000/token',
-    userinfo_endpoint: 'http://localhost:3000/userinfo',
-    jwks_uri: 'http://localhost:3000/.well-known/jwks.json',
+    issuer: process.env.ISSUER,
+    authorization_endpoint: `${process.env.DOMAIN}/authorize`,
+    token_endpoint: `${process.env.DOMAIN}/token`,
+    userinfo_endpoint: `${process.env.DOMAIN} /userinfo`,
+    jwks_uri: `${process.env.DOMAIN}/.well-known/jwks.json`,
     response_types_supported: ['code'],
     subject_types_supported: ['public'],
     id_token_signing_alg_values_supported: ['RS256'],
